@@ -60,6 +60,12 @@ func (p *Controller) CreateMenu(c *gin.Context) {
 func (p *Controller) UpdateMenu(c *gin.Context) {
 	logger.Info("[controller.UpdateMenu] start...")
 	fmt.Println("[controller.UpdateMenu] start...")
+	/*
+	 * 동일한 내용의 로그가 다른 성격으로 관리되고 있다면 
+	 * logger를 활용하여 통일하시는 방법으로 변경 해보시는 것을 어떨까요?
+	 * Println 문의 경우 UpdateMenu request가 발생할때마다 발생하게 되지만,
+	 * request별 구분이 없어 정확한 history 파악은 logger를 사용하시는 방법을 추천드립니다.
+	 */
 
 	var params model.Menu
 	if err := c.ShouldBind(&params); err == nil {
@@ -254,3 +260,9 @@ func (p *Controller) SearchOrder(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, "ERROR")
 	}
 }
+/* [코드리뷰]
+ * 해당 파일에서 모든 controller.go에서 작업해주어, 하나의 파일로 관리를 하고 있습니다.
+ * 가능하다면, 해당 파일을 주문자와, 피주문자의 API 나누어서 각각 파일 단위로 다르게 관리해주시는 것을 추천드립니다.
+ * controller 폴더 내에서 user의 성격에 따라 controller를 파일단위로 관리하는 방법은
+ * 실제 현업에서도 많이 사용됩니다. 추후에 문제가 발생했을 때 유지보수하는 측면에서도 이점을 가질 수 있습니다.
+ */
