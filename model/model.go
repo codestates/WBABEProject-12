@@ -94,6 +94,15 @@ func (p *Model) CreateMenu(menu Menu) Menu {
 
 	menu.CreateDate = primitive.NewDateTimeFromTime(time.Now().AddDate(-1, 0, 0))
 	menu.ModifyDate = primitive.NewDateTimeFromTime(time.Now().AddDate(-1, 0, 0))
+	/* [코드리뷰]
+	 * 위 코드에서 menu객체에 createDate와 ModifyDate 데이터를 관리해주는 부분은 
+	 * 데이터의 히스토리를 관리하는 측면에서 매우 훌륭한 코드입니다.
+	 * 해당 코드를 조금만 더 보완한다면, time.Now() 를 중복으로 선언하지 않고
+	 * createMenu 내에서 한번만 선언하며 변수에 넣어준 뒤, 해당 변수로 초기화를 진행하는 부분을 추천드립니다.
+	 * time.Now()을 각각 다른 곳에서 선언해주면, 위와 같은 코드에서는 running time이 0초에 수렴하며
+	 * 큰 문제를 유발하지 않겠지만, milli second 단위까지 동일한 Now() 정보를 담고있지는 않게 되어
+	 * 이후 주문관리 프로그램의 트래픽이 점점 많아지고, 코드가 복잡해질 경우, 장애 예방에 도움이 될 것입니다.
+	 */
 
 	result, err := p.colPersons.InsertOne(context.TODO(), menu)
 	if err != nil {
@@ -109,6 +118,12 @@ func (p *Model) UpdateMenu(menu Menu) Menu {
 	fmt.Println("[model.UpdateMenu Param] ", menu)
 	fmt.Println("[model.UpdateMenu menu.Name] ", menu.Name)
 	fmt.Println("[model.UpdateMenu menu.Status] ", menu.Status)
+	/* [코드리뷰]
+	 * 해당 function이 실행되는 시점에 대한 log를 Println을 통해 잘 사용해주었습니다.
+	 * 해당 부분에서 시간에 대한 정보도 함께 찍어주면 
+	 * 시스템 운영 관점에서 큰 도움이 될 것으로 보입니다.
+	 * 현업에서는 특별히 이런 debug성 로그들을 logger의 info 혹은 debug로 관리합니다.
+	 */
 
 	filter := bson.D{{"name", menu.Name}}
 
@@ -156,6 +171,13 @@ func (p *Model) DeleteMenu(menu Menu) Menu {
 	result, err := p.colPersons.DeleteOne(context.TODO(), filter)
 	if err != nil {
 		panic(err)
+	/* [코드리뷰]
+	 * error 상황에 대한 예외처리를 하는 코드가 많이 보입니다.
+	 * 위 코드와 같이 의도적으로 panic을 실행하며 프로그램을 종료시키는 것도 하나의 방법이겠지만, 
+	 * API 서버가 중단되는 일은 최대한 피해야 합니다. 
+	 * error 상황에 대한 처리를 해줄 때는 주문관리 시스템의 running을 보장하기 위해,
+	 * panic이 아닌, error 상황을 별도로 관리하는 코드로 변경해보시는 것을 추천드립니다.
+	 */
 	}
 	fmt.Printf("Documents Deleted: %v\n", result.DeletedCount)
 

@@ -31,6 +31,10 @@ func main() {
 
 	//conf
 	var configFlag = flag.String("config", "./conf/config.toml", "toml file to use for configuration")
+	/* [코드리뷰]
+	 * 시스템과 관련된 config를 main 함수 첫번째에서 잘 가져와 주셨습니다.
+	 * command 라인에서 config를 별도로 지정하여 환경에 따라 다른 시스템을 다르게 실행할 수 있게된 좋은 코드입니다.
+	 */
 	flag.Parse()
 	cf := conf.GetConfig(*configFlag)
 
